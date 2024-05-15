@@ -1,3 +1,42 @@
+import json
+import logging
+import os
+import traceback
+from datetime import datetime
+from decimal import Decimal as decimal
+
+import boto3
+from anthropic.types import ContentBlockDeltaEvent, MessageDeltaEvent, MessageStopEvent
+from anthropic.types import Message as AnthropicMessage
+from app.auth import verify_token
+from app.bedrock import calculate_price, compose_args
+from app.config import GENERATION_CONFIG, SEARCH_CONFIG
+from app.repositories.conversation import RecordNotFoundError, store_conversation
+from app.repositories.models.conversation import ChunkModel, ContentModel, MessageModel
+from app.routes.schemas.conversation import ChatInputWithToken
+from app.usecases.bot import modify_bot_last_used_time
+from app.usecases.chat import (
+    insert_knowledge,
+    prepare_conversation,
+    trace_to_root,
+    get_bedrock_response,
+)
+from app.utils import get_anthropic_client, get_current_time, is_anthropic_model
+from app.vector_search import filter_used_results, search_related_docs
+from boto3.dynamodb.conditions import Key
+from ulid import ULID
+
+WEBSOCKET_SESSION_TABLE_NAME = os.environ["WEBSOCKET_SESSION_TABLE_NAME"]
+
+
+client = get_anthropic_client()
+dynamodb_client = boto3.resource("dynamodb")
+table = dynamodb_client.Table(WEBSOCKET_SESSION_TABLE_NAME)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 def process_chat_input(
     chat_input: ChatInputWithToken, gatewayapi, connection_id: str
 ) -> dict:
