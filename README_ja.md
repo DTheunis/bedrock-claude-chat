@@ -1,7 +1,7 @@
 # Bedrock Claude Chat
 
 > [!Tip]
-> 🔔**Claude3 Opus をサポートしました。** 2024/04/17 現在、Bedrock は`us-west-2`のみサポートしています。このリポジトリでは Bedrock はデフォルトで`us-west-2`リージョンを利用します。このため、ご利用される場合はデプロイ前に`bedrockRegion`の値を変更してください。詳細は[こちら](#deploy-using-cdk)
+> 🔔**Claude3 Opus をサポートしました。** 2024/04/17 現在、Bedrock は`us-west-2`のみサポートしています。このリポジトリでは Bedrock はデフォルトで`us-east-1`リージョンを利用します。このため、ご利用される場合はデプロイ前に`bedrockRegion`の値を変更してください。詳細は[こちら](#deploy-using-cdk)
 
 > [!Warning]
 > 現在のバージョン(v0.4.x)は、DynamoDB テーブルスキーマの変更のため、過去バージョン(~v0.3.0)とは互換性がありません。**以前のバージョンから v0.4.x へアップデートすると、既存の対話記録は全て破棄されますので注意が必要です。**
@@ -29,7 +29,7 @@
 
 ## 🚀 まずはお試し
 
-- us-west-2 リージョンにて、[Bedrock Model access](https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/modelaccess) > `Manage model access` > `Anthropic / Claude 3 Haiku`, `Anthropic / Claude 3 Sonnet` `Cohere / Embed Multilingual`をチェックし、`Save changes`をクリックします
+- us-east-1 リージョンにて、[Bedrock Model access](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess) > `Manage model access` > `Anthropic / Claude 3 Haiku`, `Anthropic / Claude 3 Sonnet` `Cohere / Embed Multilingual`をチェックし、`Save changes`をクリックします
 
 <details>
 <summary>スクリーンショット</summary>
@@ -38,7 +38,7 @@
 
 </details>
 
-- [CloudShell](https://console.aws.amazon.com/cloudshell/home)をデプロイしたいリージョン (eu-central-1 など) で開きます
+- [CloudShell](https://console.aws.amazon.com/cloudshell/home)をデプロイしたいリージョン (ap-northeast-1 など) で開きます
 
 - 下記のコマンドでデプロイ実行します
 
@@ -156,7 +156,7 @@ npm i -g aws-cdk
 - CDK デプロイ前に、デプロイ先リージョンに対して 1 度だけ Bootstrap の作業が必要となります。ここでは東京リージョンへデプロイするものとします。なお`<account id>`はアカウント ID に置換してください。
 
 ```
-cdk bootstrap aws://<account id>/eu-central-1
+cdk bootstrap aws://<account id>/ap-northeast-1
 ```
 
 - 必要に応じて[cdk.json](../cdk/cdk.json)の下記項目を編集します
@@ -179,8 +179,8 @@ cdk deploy --require-approval never --all
 
 Outputs:
 BedrockChatStack.AuthUserPoolClientIdXXXXX = xxxxxxx
-BedrockChatStack.AuthUserPoolIdXXXXXX = eu-central-1_XXXX
-BedrockChatStack.BackendApiBackendApiUrlXXXXX = https://xxxxx.execute-api.eu-central-1.amazonaws.com
+BedrockChatStack.AuthUserPoolIdXXXXXX = ap-northeast-1_XXXX
+BedrockChatStack.BackendApiBackendApiUrlXXXXX = https://xxxxx.execute-api.ap-northeast-1.amazonaws.com
 BedrockChatStack.FrontendURL = https://xxxxx.cloudfront.net
 ```
 
@@ -222,7 +222,7 @@ GENERATION_CONFIG = {
 
 ### リソースの削除
 
-cli および CDK を利用されている場合、`cdk destroy`を実行してください。そうでない場合は[CloudFormation](https://console.aws.amazon.com/cloudformation/home)へアクセスし、手動で`BedrockChatStack`および`FrontendWafStack`を削除してください。なお`FrontendWafStack`は `us-west-2` リージョンにあります。
+cli および CDK を利用されている場合、`cdk destroy`を実行してください。そうでない場合は[CloudFormation](https://console.aws.amazon.com/cloudformation/home)へアクセスし、手動で`BedrockChatStack`および`FrontendWafStack`を削除してください。なお`FrontendWafStack`は `us-east-1` リージョンにあります。
 
 ### RAG 用ベクトル DB の停止
 
